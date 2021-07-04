@@ -36,13 +36,30 @@ void removeRaiz (ABin *a){
         aux =*a;
         menor->esq = (*a)->esq;
         menor->dir = (*a)->dir;
-
+        *a = menor;
     }
-
+    else {
+        aux=*a;
+        (*a)->esq;
+    }
+    free(aux);
 }
 
 int removeElem (ABin *a, int x){
-    return (-1);
+    int r=-1;
+    while (*a && r==-1){
+        if((*a)->valor==x){
+            removeRaiz(a);
+            r=0;
+        }
+        else if((*a)->valor>x){
+            a=&((*a)->esq);
+        }
+        else {
+            a=&((*a)->dir);
+        }
+    }
+    return r;
 }
 
 // Questão 2
@@ -59,25 +76,96 @@ void rodaDireita (ABin *a){
     *a = b;
 }
 void promoveMenor (ABin *a){
+    if (*a && (*a)->esq){
+        promoveMenor(&((*a)->esq));
+        rodaDireita(a);
+    }
 }
 void promoveMaior (ABin *a){
+    if (*a && (*a)->dir){
+        promoveMaior(&((*a)->dir));
+        rodaEsquerda(a);
+    }
 }
 ABin removeMenorAlt (ABin *a){
-    return NULL;
+    promoveMenor(a);
+    ABin r = *a;
+    *a=(*a)->dir;
+    return r;
 }
 
 // Questão 3
 int constroiEspinhaAux (ABin *a, ABin *ult){
-    return (-1);
+    int r=0;
+    ABin aux;
+    if(*a){
+        if(!(*a)->esq && !(*a)->dir){
+            *ult = *a;
+            r++;
+        }
+        else if (!((*a)->esq)){
+            r=r + 1 + constroiEspinhaAux(&((*a)->dir),ult);
+            }
+        else{ 
+            r = r + 1 + constroiEspinhaAux(&((*a)->esq),&aux);
+            if (!(*a)->dir) *ult = *a;
+            else{
+                r = r + constroiEspinhaAux(&((*a)->esq),ult);  
+            }
+            aux->dir=*a;
+            aux = (*a)->esq;
+            (*a)->esq=NULL;
+            *a=aux;
+        }
+    }
+    else (*ult)=NULL; 
+    
+    
+    
+    
+    return r;
 }
-int constroiEspinha (ABin *a){
+int constroiEspinha2 (ABin *a){
     ABin ult;
     return (constroiEspinhaAux (a,&ult));
 }
+int constroiEspinha (ABin *a){
+    int r=0;
+    while(*a){
+        promoveMenor(a);
+        a = &((*a)->dir);
+        r++;
+    }
+    return r;
+}
 
 ABin equilibraEspinha (ABin *a, int n) {
-	return NULL;
+    ABin r;
+    for (int i = 0;i<n && *a;i++) a=&((*a)->dir);
+    r=*a;
+    for(int i=0;i<n;i++) promoveMaior(a);
+	return r;
 }
 
 void equilibra (ABin *a) {
+    int n = constroiEspinha(a);
+    equilibraEspinha(a,n);
+}
+
+
+void freeABin (ABin a){
+    if (a){
+        freeABin(a->esq);
+        freeABin(a->dir);
+        free(a);
+    }
+}
+
+
+void dumpABin (ABin a, int N){
+    if (a){
+        dumpABin(a->esq,N);
+        printf("%d ",a->valor);
+        dumpABin(a->dir,N);
+    }
 }

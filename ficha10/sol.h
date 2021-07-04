@@ -1,4 +1,4 @@
-
+#include "abin.h"
 // Questão 1
 ABin removeMenor_sol (ABin *a);
 void removeRaiz_sol (ABin *a);
